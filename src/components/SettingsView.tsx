@@ -600,7 +600,7 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
               Integrado com cliente Supabase com sincronização em tempo real para Pacientes, Prontuários e Consultas.
             </p>
 
-            <div className="flex flex-col gap-2 pt-1">
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
               <button
                 onClick={() => {
                   setPasswordTargetAction('supabase_config');
@@ -608,10 +608,10 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
                   setPasswordError('');
                   setShowPasswordModal(true);
                 }}
-                className="w-full py-2.5 bg-[#006194] hover:bg-[#004b73] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                className="flex-1 py-2 bg-[#f0f3ff] hover:bg-[#e7eeff] text-[#006194] font-medium rounded-lg text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-[#d8e3fb]"
               >
-                <span className="material-symbols-outlined text-[18px]">lock_reset</span>
-                Configurar Conexão (Acesso Restrito)
+                <span className="material-symbols-outlined text-[16px]">settings</span>
+                Configurar Conexão
               </button>
 
               <button
@@ -621,10 +621,10 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
                   setPasswordError('');
                   setShowPasswordModal(true);
                 }}
-                className="w-full py-2.5 bg-[#e7eeff] hover:bg-[#dee8ff] text-[#006194] font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-[#3f4850] font-medium rounded-lg text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-[#bfc7d2]/40"
               >
-                <span className="material-symbols-outlined text-[18px]">terminal</span>
-                Ver SQL de Migration (Acesso Restrito)
+                <span className="material-symbols-outlined text-[16px]">terminal</span>
+                Ver SQL de Migration
               </button>
             </div>
           </div>

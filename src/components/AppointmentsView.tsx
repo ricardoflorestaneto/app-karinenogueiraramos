@@ -384,10 +384,10 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
               setPasswordError('');
               setShowPasswordModal(true);
             }}
-            className="bg-white hover:bg-[#f0f3ff] text-[#006194] border border-[#006194]/30 px-3.5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+            className="bg-white hover:bg-[#f0f3ff] text-[#006194] border border-[#006194]/30 px-3 py-2 rounded-lg font-medium text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer opacity-80 hover:opacity-100"
             title="Configurar Conexão do Banco de Dados Supabase (Acesso Restrito)"
           >
-            <span className="material-symbols-outlined text-[18px]">database</span>
+            <span className="material-symbols-outlined text-[16px]">database</span>
             <span>Configurar Supabase</span>
             {isSupabaseConfigured ? (
               <span className="w-2 h-2 rounded-full bg-[#00714d]" title="Banco Conectado"></span>

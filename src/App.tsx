@@ -11,6 +11,7 @@ import {
   initialAppointments,
   initialClinicalRecords,
   initialDoctorProfile,
+  DEFAULT_DOCTOR_PHOTO_URL,
 } from './mockData';
 
 import { LoginView } from './components/LoginView';
@@ -251,6 +252,8 @@ export default function App() {
   };
 
   const handleSaveDoctor = async (updatedDoc: DoctorProfile) => {
+    const photoUrl = (updatedDoc.profile_picture_url || updatedDoc.avatarUrl || '').trim() || DEFAULT_DOCTOR_PHOTO_URL;
+
     if (isSupabaseConfigured && supabase) {
       const { error } = await supabase.from('doctor_profile').upsert({
         id: 'main_doctor',
@@ -260,7 +263,8 @@ export default function App() {
         email: updatedDoc.email,
         phone: updatedDoc.phone,
         clinic_name: updatedDoc.clinicName,
-        avatar_url: updatedDoc.avatarUrl,
+        avatar_url: photoUrl,
+        profile_picture_url: photoUrl,
         address: updatedDoc.address || '',
         cep: updatedDoc.cep || '',
         complement: updatedDoc.complement || '',
@@ -274,7 +278,11 @@ export default function App() {
       }
     }
 
-    setDoctor(updatedDoc);
+    setDoctor({
+      ...updatedDoc,
+      avatarUrl: photoUrl,
+      profile_picture_url: photoUrl,
+    });
   };
 
   if (!isAuthenticated) {

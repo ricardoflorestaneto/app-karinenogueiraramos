@@ -82,6 +82,7 @@ export interface DoctorProfile {
   phone: string;
   clinicName: string;
   avatarUrl: string;
+  profile_picture_url?: string;
   address?: string;
   cep?: string;
   complement?: string;

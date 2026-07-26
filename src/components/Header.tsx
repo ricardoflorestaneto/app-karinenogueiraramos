@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DoctorProfile } from '../types';
+import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 
 interface HeaderProps {
   doctor: DoctorProfile;
@@ -169,7 +170,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="relative">
               <img
-                src={doctor.avatarUrl}
+                src={doctor.profile_picture_url || doctor.avatarUrl || DEFAULT_DOCTOR_PHOTO_URL}
                 alt={doctor.name}
                 className="w-10 h-10 rounded-full object-cover border-2 border-[#006194]/30 shadow-xs group-hover:border-[#006194] transition-all"
               />

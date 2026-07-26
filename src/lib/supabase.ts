@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Patient, Appointment, ClinicalRecordEntry, DoctorProfile } from '../types';
+import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 
 const env = (import.meta as any).env || {};
 
@@ -256,6 +257,15 @@ export function mapClinicalRecordToDb(rec: ClinicalRecordEntry): any {
   };
 }
 
+export function getSupabaseBucketPhotoUrl(bucketName: string = 'fotodrakarine', fileName: string = 'karineweb.jpg'): string {
+  const { url, isConfigured } = getSupabaseCredentials();
+  if (url && isConfigured) {
+    const cleanUrl = url.replace(/\/$/, '');
+    return `${cleanUrl}/storage/v1/object/public/${bucketName}/${fileName}`;
+  }
+  return '';
+}
+
 // Fetch all data from Supabase if configured
 export async function fetchSupabaseData() {
   if (!supabase) return null;
@@ -281,6 +291,8 @@ export async function fetchSupabaseData() {
       notifySupabaseDatabaseError('Consulta de Perfil Médico (doctor_profile)', doctorRes.error);
     }
 
+    const doctorPhotoUrl = doctorRes.data?.profile_picture_url || doctorRes.data?.avatar_url || DEFAULT_DOCTOR_PHOTO_URL;
+
     return {
       patients: patientsRes.data ? patientsRes.data.map(mapPatientFromDb) : null,
       appointments: appointmentsRes.data ? appointmentsRes.data.map(mapAppointmentFromDb) : null,
@@ -293,7 +305,8 @@ export async function fetchSupabaseData() {
             email: doctorRes.data.email,
             phone: doctorRes.data.phone,
             clinicName: doctorRes.data.clinic_name,
-            avatarUrl: doctorRes.data.avatar_url,
+            avatarUrl: doctorPhotoUrl,
+            profile_picture_url: doctorPhotoUrl,
             address: doctorRes.data.address || '',
             cep: doctorRes.data.cep || '',
             complement: doctorRes.data.complement || '',

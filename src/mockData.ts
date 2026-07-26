@@ -1,5 +1,7 @@
 import { Patient, Appointment, DoctorProfile, ClinicalRecordEntry, ToothCondition } from './types';
 
+export const DEFAULT_DOCTOR_PHOTO_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvylWKMoYvCZwNKNkTXbyOMgC8KvaKg8SYr8bMcB2-36iXhpVKMq6bVP8FO-W4ef76avVc1hUxciWw6rivN0M5xAdb2VfgJLVACCE0giZjL91FK6Xcmwmzw8EvCdTsaZSaMz9vp4wLQrbjUfjgn5tGcF6ajHSNLV1V-FOQRrYsuA8RPHxbExGzK0pwgWXUAcMibhlE4Fag04yMndy5DXP6B7zLCD4pTaNTZcCQhICZGlQpoAxCvmkjIocBhd2riLs53Iejjaf-NOc';
+
 export const initialDoctorProfile: DoctorProfile = {
   name: 'Dra. Karine Ramos',
   role: 'Cirurgiã-Dentista - Especialista em Ortodontia e Estética',
@@ -7,7 +9,8 @@ export const initialDoctorProfile: DoctorProfile = {
   email: 'karine@consultorio.com',
   phone: '(85) 988076961',
   clinicName: 'Dra. Karine Nogueira Ramos - Gestão Odontológica',
-  avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvylWKMoYvCZwNKNkTXbyOMgC8KvaKg8SYr8bMcB2-36iXhpVKMq6bVP8FO-W4ef76avVc1hUxciWw6rivN0M5xAdb2VfgJLVACCE0giZjL91FK6Xcmwmzw8EvCdTsaZSaMz9vp4wLQrbjUfjgn5tGcF6ajHSNLV1V-FOQRrYsuA8RPHxbExGzK0pwgWXUAcMibhlE4Fag04yMndy5DXP6B7zLCD4pTaNTZcCQhICZGlQpoAxCvmkjIocBhd2riLs53Iejjaf-NOc',
+  avatarUrl: DEFAULT_DOCTOR_PHOTO_URL,
+  profile_picture_url: DEFAULT_DOCTOR_PHOTO_URL,
   address: 'Av. Paulista, 1500',
   cep: '01310-100',
   complement: 'Conjunto 121',

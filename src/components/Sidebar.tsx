@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActiveTab, DoctorProfile } from '../types';
+import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 
 interface SidebarProps {
   doctor?: DoctorProfile;
@@ -24,11 +25,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="px-4 mb-8 flex flex-col gap-1">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[#007bb9] rounded-lg flex items-center justify-center text-white shadow-xs overflow-hidden shrink-0">
-            {doctor?.avatarUrl ? (
-              <img src={doctor.avatarUrl} alt={doctor.name} className="w-full h-full object-cover" />
-            ) : (
-              <span className="material-symbols-outlined text-[24px]">dentistry</span>
-            )}
+            <img
+              src={doctor?.profile_picture_url || doctor?.avatarUrl || DEFAULT_DOCTOR_PHOTO_URL}
+              alt={doctor?.name || 'Dra. Karine'}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h1 className="font-semibold text-[18px] text-[#006194] leading-tight">

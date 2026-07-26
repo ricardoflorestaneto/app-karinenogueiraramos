@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DoctorProfile } from '../types';
+import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 import {
+  supabase,
   isSupabaseConfigured,
   getSupabaseCredentials,
   setCustomSupabaseCredentials,
   testSupabaseConnection,
+  getSupabaseBucketPhotoUrl,
 } from '../lib/supabase';
 
 interface SettingsViewProps {
@@ -23,7 +26,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     email: doctor.email || '',
     phone: doctor.phone || '',
     clinicName: doctor.clinicName || '',
-    avatarUrl: doctor.avatarUrl || '',
+    avatarUrl: doctor.profile_picture_url || doctor.avatarUrl || '',
+    profile_picture_url: doctor.profile_picture_url || doctor.avatarUrl || '',
     address: doctor.address || '',
     cep: doctor.cep || '',
     complement: doctor.complement || '',
@@ -31,6 +35,30 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     city: doctor.city || 'São Paulo',
     state: doctor.state || 'SP',
   });
+
+  const [photoStatus, setPhotoStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  useEffect(() => {
+    const photoUrl = doctor.profile_picture_url || doctor.avatarUrl || '';
+    setFormData((prev) => ({
+      ...prev,
+      name: doctor.name || prev.name,
+      role: doctor.role || prev.role,
+      cro: doctor.cro || prev.cro,
+      email: doctor.email || prev.email,
+      phone: doctor.phone || prev.phone,
+      clinicName: doctor.clinicName || prev.clinicName,
+      avatarUrl: photoUrl || prev.avatarUrl,
+      profile_picture_url: photoUrl || prev.profile_picture_url,
+      address: doctor.address || prev.address,
+      cep: doctor.cep || prev.cep,
+      complement: doctor.complement || prev.complement,
+      neighborhood: doctor.neighborhood || prev.neighborhood,
+      city: doctor.city || prev.city,
+      state: doctor.state || prev.state,
+    }));
+  }, [doctor]);
+
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [backupSuccess, setBackupSuccess] = useState(false);
   const [showSqlModal, setShowSqlModal] = useState(false);
@@ -190,6 +218,7 @@ CREATE TABLE IF NOT EXISTS public.doctor_profile (
     phone TEXT NOT NULL,
     clinic_name TEXT NOT NULL,
     avatar_url TEXT,
+    profile_picture_url VARCHAR(500),
     address TEXT,
     cep TEXT,
     complement TEXT,
@@ -200,12 +229,22 @@ CREATE TABLE IF NOT EXISTS public.doctor_profile (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS profile_picture_url VARCHAR(500);
 ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS cep TEXT;
 ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS complement TEXT;
 ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS neighborhood TEXT;
 ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS city TEXT;
 ALTER TABLE public.doctor_profile ADD COLUMN IF NOT EXISTS state TEXT;
+
+-- 6. Configuração do Supabase Storage (Bucket fotodrakarine)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('fotodrakarine', 'fotodrakarine', true) 
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Acesso Publico fotodrakarine" ON storage.objects;
+CREATE POLICY "Acesso Publico fotodrakarine" ON storage.objects 
+  FOR ALL USING (bucket_id = 'fotodrakarine') WITH CHECK (bucket_id = 'fotodrakarine');
 
 -- 6. Tabela de Procedimentos Odontológicos
 CREATE TABLE IF NOT EXISTS public.procedimentos (
@@ -345,17 +384,60 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex items-center gap-4 p-4 bg-[#f0f3ff] rounded-2xl border border-[#d8e3fb]">
-              <img
-                src={formData.avatarUrl}
-                alt={formData.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-[#006194] shadow-xs"
-              />
-              <div>
-                <p className="font-bold text-sm text-[#111c2d]">{formData.name}</p>
-                <p className="text-xs text-[#006194]">{formData.cro}</p>
-                <p className="text-[11px] text-[#707881] mt-0.5">Cirurgiã-Dentista Responsável</p>
+            <div className="p-4 bg-[#f0f3ff] rounded-2xl border border-[#d8e3fb] space-y-3">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="relative group shrink-0">
+                  <img
+                    src={(formData.profile_picture_url || formData.avatarUrl || '').trim() || DEFAULT_DOCTOR_PHOTO_URL}
+                    alt={formData.name || 'Dra. Karine'}
+                    className="w-20 h-20 rounded-full object-cover border-2 border-[#006194] shadow-xs"
+                  />
+                </div>
+
+                <div className="flex-1 text-center sm:text-left space-y-1">
+                  <div>
+                    <p className="font-bold text-sm text-[#111c2d]">{formData.name || 'Dra. Karine Nogueira'}</p>
+                    <p className="text-xs text-[#006194] font-semibold">{formData.cro || 'CRO-SP 148.921'}</p>
+                    <p className="text-[11px] text-[#707881] mt-0.5">Cirurgiã-Dentista Responsável</p>
+                  </div>
+                </div>
               </div>
+
+              {/* URL do campo doctor_profile.profile_picture_url */}
+              <div className="pt-2 border-t border-[#d8e3fb]">
+                <label className="block text-[11px] font-semibold text-[#3f4850] mb-1">
+                  URL da Foto (<code className="text-[#006194] bg-white px-1 py-0.5 rounded border border-[#d8e3fb]">doctor_profile.profile_picture_url</code>)
+                </label>
+                <input
+                  type="text"
+                  value={formData.profile_picture_url}
+                  onChange={(e) => {
+                    const newUrl = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      avatarUrl: newUrl,
+                      profile_picture_url: newUrl,
+                    }));
+                  }}
+                  placeholder="https://.../storage/v1/object/public/fotodrakarine/karineweb.jpg"
+                  className="w-full p-2 bg-white border border-[#bfc7d2] rounded-lg text-xs font-mono text-[#111c2d] focus:outline-none focus:border-[#006194]"
+                />
+              </div>
+
+              {photoStatus && (
+                <div
+                  className={`p-2.5 rounded-xl text-xs flex items-center gap-2 ${
+                    photoStatus.type === 'success'
+                      ? 'bg-[#e8f8f0] text-[#006c49] border border-[#006c49]/30'
+                      : 'bg-[#ffdad6] text-[#93000a] border border-[#ffdad6]'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px] shrink-0">
+                    {photoStatus.type === 'success' ? 'check_circle' : 'error'}
+                  </span>
+                  <span className="leading-tight">{photoStatus.message}</span>
+                </div>
+              )}
             </div>
 
             <div>

@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9f9ff;
+    color: #111c2d;
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.glass-background {
+  background: radial-gradient(circle at 0% 0%, rgba(0, 97, 148, 0.05) 0%, transparent 50%),
+              radial-gradient(circle at 100% 100%, rgba(0, 108, 73, 0.03) 0%, transparent 50%);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Custom clinical scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f3ff;
+}
+::-webkit-scrollbar-thumb {
+  background: #bfc7d2;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #006194;
+}
+
+/* Printable A4 Specifications & Media Print Rules */
+@media print {
+  @page {
+    size: auto;
+    margin: 5mm;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide all UI controls, sidebars, headers, modals, etc. when printing main window */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Expose strictly the printable prescription document and its children */
+  #printable-receituario,
+  #printable-receituario * {
+    visibility: visible !important;
+  }
+
+  /* Position printable element as full page A4 canvas */
+  #printable-receituario {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    background: #ffffff !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #111c2d !important;
+    box-sizing: border-box !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

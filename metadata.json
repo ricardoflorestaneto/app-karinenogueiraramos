@@ -1,0 +1,6 @@
+{
+  "name": "Consultório Dra. Karine Nogueira Ramos",
+  "description": "Sistema de Gestão Odontológica e Prontuário de Pacientes",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Appointment, Patient, Convenio } from '../types';
 import {
-  supabase,
-  isSupabaseConfigured,
-  getSupabaseCredentials,
-  setCustomSupabaseCredentials,
-  testSupabaseConnection,
-} from '../lib/supabase';
+  getSupabase, getIsSupabaseConfigured, getSupabaseCredentials, setCustomSupabaseCredentials, testSupabaseConnection, } from '../lib/supabase';
 
 interface AppointmentsViewProps {
   appointments: Appointment[];
@@ -111,9 +106,9 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
             'Selante Odontológico',
           ];
 
-      if (isSupabaseConfigured && supabase) {
+      if (getIsSupabaseConfigured() && getSupabase()) {
         try {
-          const { data: convData } = await supabase
+          const { data: convData } = await getSupabase()
             .from('convenios')
             .select('*')
             .order('nome', { ascending: true });
@@ -128,7 +123,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
             }));
           }
 
-          const { data: procData } = await supabase
+          const { data: procData } = await getSupabase()
             .from('procedimentos')
             .select('*')
             .order('nome', { ascending: true });
@@ -389,7 +384,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
           >
             <span className="material-symbols-outlined text-[16px]">database</span>
             <span>Configurar Supabase</span>
-            {isSupabaseConfigured ? (
+            {getIsSupabaseConfigured() ? (
               <span className="w-2 h-2 rounded-full bg-[#00714d]" title="Banco Conectado"></span>
             ) : (
               <span className="w-2 h-2 rounded-full bg-amber-500" title="Banco Pendente"></span>
@@ -1047,7 +1042,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 <input
                   type="url"
                   required
-                  placeholder="https://seu-projeto.supabase.co"
+                  placeholder="https://seu-projeto.getSupabase().co"
                   value={customSupabaseUrl}
                   onChange={(e) => {
                     setCustomSupabaseUrl(e.target.value);

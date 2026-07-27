@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SupabaseErrorEventDetail } from '../lib/supabase';
+import { SupabaseErrorEventDetail} from '../lib/supabase';
 
 export const SupabaseErrorModal: React.FC = () => {
   const [errorDetail, setErrorDetail] = useState<SupabaseErrorEventDetail | null>(null);
@@ -13,9 +13,9 @@ export const SupabaseErrorModal: React.FC = () => {
       }
     };
 
-    window.addEventListener('supabase-database-error', handleDbError);
+    window.addEventListener('getSupabase()-database-error', handleDbError);
     return () => {
-      window.removeEventListener('supabase-database-error', handleDbError);
+      window.removeEventListener('getSupabase()-database-error', handleDbError);
     };
   }, []);
 

@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import {
-  supabase,
-  isSupabaseConfigured,
-  getSupabaseCredentials,
-  setCustomSupabaseCredentials,
-  testSupabaseConnection,
-} from '../lib/supabase';
+  getSupabase, getIsSupabaseConfigured, getSupabaseCredentials, setCustomSupabaseCredentials, testSupabaseConnection, } from '../lib/supabase';
 
 interface LoginViewProps {
   onLoginSuccess: () => void;
@@ -115,9 +110,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
     setIsLoading(true);
 
     try {
-      if (isSupabaseConfigured && supabase) {
+      if (getIsSupabaseConfigured() && getSupabase()) {
         if (isSignUp) {
-          const { error } = await supabase.auth.signUp({
+          const { error } = await getSupabase().auth.signUp({
             email: cleanEmail,
             password: password,
           });
@@ -135,7 +130,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             setIsSignUp(false);
           }
         } else {
-          const { error } = await supabase.auth.signInWithPassword({
+          const { error } = await getSupabase().auth.signInWithPassword({
             email: cleanEmail,
             password: password,
           });
@@ -369,10 +364,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
           >
             <span
               className={`w-2 h-2 rounded-full ${
-                isSupabaseConfigured ? 'bg-[#006c49]' : 'bg-amber-500'
+                getIsSupabaseConfigured() ? 'bg-[#006c49]' : 'bg-amber-500'
               } animate-pulse`}
             ></span>
-            {isSupabaseConfigured ? 'Supabase Auth Ativo' : 'Servidor Modo Local'}
+            {getIsSupabaseConfigured() ? 'Supabase Auth Ativo' : 'Servidor Modo Local'}
           </span>
           <span className="text-[#bfc7d2]">|</span>
           <span>v2.4.0 Clinical Precision</span>
@@ -591,7 +586,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                 <input
                   type="url"
                   required
-                  placeholder="https://seu-projeto.supabase.co"
+                  placeholder="https://seu-projeto.getSupabase().co"
                   value={customSupabaseUrl}
                   onChange={(e) => {
                     setCustomSupabaseUrl(e.target.value);

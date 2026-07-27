@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Procedimento } from '../types';
-import { supabase, isSupabaseConfigured, notifySupabaseDatabaseError } from '../lib/supabase';
+import { getSupabase, getIsSupabaseConfigured, notifySupabaseDatabaseError} from '../lib/supabase';
 
 const initialProcedimentosData: Procedimento[] = [
   { id: 1, nome: 'Avaliação Odontológica / Consulta Inicial', createdAt: '2026-01-01T08:00:00.000Z' },
@@ -89,11 +89,11 @@ export const ProcedimentosView: React.FC = () => {
 
   // Fetch procedimentos from Supabase if available
   useEffect(() => {
-    if (isSupabaseConfigured && supabase) {
+    if (getIsSupabaseConfigured() && getSupabase()) {
       setIsLoading(true);
       const fetchProcedimentos = async () => {
         try {
-          const { data, error } = await supabase
+          const { data, error } = await getSupabase()
             .from('procedimentos')
             .select('*')
             .order('id', { ascending: true });
@@ -191,8 +191,8 @@ export const ProcedimentosView: React.FC = () => {
           updatedAt: nowIso,
         };
 
-        if (isSupabaseConfigured && supabase) {
-          const { data, error } = await supabase
+        if (getIsSupabaseConfigured() && getSupabase()) {
+          const { data, error } = await getSupabase()
             .from('procedimentos')
             .insert([{ nome: trimmedNome }])
             .select();
@@ -230,8 +230,8 @@ export const ProcedimentosView: React.FC = () => {
           updatedAt: nowIso,
         };
 
-        if (isSupabaseConfigured && supabase) {
-          const { error } = await supabase
+        if (getIsSupabaseConfigured() && getSupabase()) {
+          const { error } = await getSupabase()
             .from('procedimentos')
             .update({
               nome: trimmedNome,
@@ -376,7 +376,7 @@ export const ProcedimentosView: React.FC = () => {
             <span>Ver Script SQL Supabase</span>
           </button>
 
-          {isSupabaseConfigured ? (
+          {getIsSupabaseConfigured() ? (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-[#e7f4e8] text-[#1e7e34] rounded-full text-xs font-medium border border-[#c3e6cb]">
               <span className="w-2 h-2 rounded-full bg-[#28a745] animate-pulse"></span>
               Conectado ao Supabase

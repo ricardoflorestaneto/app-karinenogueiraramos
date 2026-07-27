@@ -27,14 +27,7 @@ import { ProcedimentosView } from './components/ProcedimentosView';
 import { SupabaseErrorModal } from './components/SupabaseErrorModal';
 
 import {
-  supabase,
-  isSupabaseConfigured,
-  fetchSupabaseData,
-  mapPatientToDb,
-  mapAppointmentToDb,
-  mapClinicalRecordToDb,
-  notifySupabaseDatabaseError,
-} from './lib/supabase';
+  getSupabase, getIsSupabaseConfigured, fetchSupabaseData, mapPatientToDb, mapAppointmentToDb, mapClinicalRecordToDb, notifySupabaseDatabaseError, } from './lib/supabase';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -75,7 +68,7 @@ export default function App() {
 
   // Initial load from Supabase if configured
   useEffect(() => {
-    if (isSupabaseConfigured && supabase) {
+    if (getIsSupabaseConfigured() && getSupabase()) {
       fetchSupabaseData().then((data) => {
         if (data) {
           if (data.patients !== null) setPatients(data.patients);
@@ -143,9 +136,9 @@ export default function App() {
       savedPatient = { ...patientData, id: newId } as Patient;
     }
 
-    if (isSupabaseConfigured && supabase) {
+    if (getIsSupabaseConfigured() && getSupabase()) {
       const opName = patientData.id ? 'Alteração de Paciente' : 'Inclusão de Paciente';
-      const { error } = await supabase.from('patients').upsert(mapPatientToDb(savedPatient));
+      const { error } = await getSupabase().from('patients').upsert(mapPatientToDb(savedPatient));
       if (error) {
         notifySupabaseDatabaseError(opName, error);
         return; // Interrupt operation on DB error
@@ -164,8 +157,8 @@ export default function App() {
   };
 
   const handleDeletePatient = async (id: string) => {
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('patients').delete().eq('id', id);
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('patients').delete().eq('id', id);
       if (error) {
         notifySupabaseDatabaseError('Exclusão de Paciente', error);
         return; // Interrupt operation on DB error
@@ -185,8 +178,8 @@ export default function App() {
     const id = `app-${Date.now()}`;
     const fullApp: Appointment = { ...newApp, id };
 
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('appointments').insert(mapAppointmentToDb(fullApp));
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('appointments').insert(mapAppointmentToDb(fullApp));
       if (error) {
         notifySupabaseDatabaseError('Inclusão de Agendamento', error);
         return; // Interrupt operation on DB error
@@ -197,8 +190,8 @@ export default function App() {
   };
 
   const handleUpdateAppointmentStatus = async (id: string, newStatus: Appointment['status']) => {
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('appointments').update({ status: newStatus }).eq('id', id);
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('appointments').update({ status: newStatus }).eq('id', id);
       if (error) {
         notifySupabaseDatabaseError('Atualização de Status da Consulta', error);
         return; // Interrupt operation on DB error
@@ -211,8 +204,8 @@ export default function App() {
   };
 
   const handleUpdateAppointment = async (updatedApp: Appointment) => {
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('appointments').upsert(mapAppointmentToDb(updatedApp));
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('appointments').upsert(mapAppointmentToDb(updatedApp));
       if (error) {
         notifySupabaseDatabaseError('Alteração de Agendamento', error);
         return; // Interrupt operation on DB error
@@ -225,8 +218,8 @@ export default function App() {
   };
 
   const handleDeleteAppointment = async (id: string) => {
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('appointments').delete().eq('id', id);
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('appointments').delete().eq('id', id);
       if (error) {
         notifySupabaseDatabaseError('Exclusão de Agendamento', error);
         return; // Interrupt operation on DB error
@@ -240,8 +233,8 @@ export default function App() {
     const id = `rec-${Date.now()}`;
     const fullRecord: ClinicalRecordEntry = { ...newEntry, id };
 
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('clinical_records').insert(mapClinicalRecordToDb(fullRecord));
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('clinical_records').insert(mapClinicalRecordToDb(fullRecord));
       if (error) {
         notifySupabaseDatabaseError('Inclusão de Prontuário Clínico', error);
         return; // Interrupt operation on DB error
@@ -254,8 +247,8 @@ export default function App() {
   const handleSaveDoctor = async (updatedDoc: DoctorProfile) => {
     const photoUrl = (updatedDoc.profile_picture_url || updatedDoc.avatarUrl || '').trim() || DEFAULT_DOCTOR_PHOTO_URL;
 
-    if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.from('doctor_profile').upsert({
+    if (getIsSupabaseConfigured() && getSupabase()) {
+      const { error } = await getSupabase().from('doctor_profile').upsert({
         id: 'main_doctor',
         name: updatedDoc.name,
         role: updatedDoc.role,

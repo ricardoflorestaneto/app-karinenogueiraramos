@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Convenio } from '../types';
-import { supabase, isSupabaseConfigured, notifySupabaseDatabaseError } from '../lib/supabase';
+import { getSupabase, getIsSupabaseConfigured, notifySupabaseDatabaseError} from '../lib/supabase';
 
 const initialConveniosData: Convenio[] = [
   {
@@ -71,11 +71,11 @@ export const ConveniosView: React.FC = () => {
 
   // Fetch convenios from Supabase if available
   useEffect(() => {
-    if (isSupabaseConfigured && supabase) {
+    if (getIsSupabaseConfigured() && getSupabase()) {
       setIsLoading(true);
       const fetchConvenios = async () => {
         try {
-          const { data, error } = await supabase
+          const { data, error } = await getSupabase()
             .from('convenios')
             .select('*')
             .order('codigo', { ascending: true });
@@ -177,8 +177,8 @@ export const ConveniosView: React.FC = () => {
           ultimaAlteracao: nowIso,
         };
 
-        if (isSupabaseConfigured && supabase) {
-          const { data, error } = await supabase
+        if (getIsSupabaseConfigured() && getSupabase()) {
+          const { data, error } = await getSupabase()
             .from('convenios')
             .insert([{ nome: trimmedNome, status }])
             .select();
@@ -219,8 +219,8 @@ export const ConveniosView: React.FC = () => {
           ultimaAlteracao: nowIso,
         };
 
-        if (isSupabaseConfigured && supabase) {
-          const { error } = await supabase
+        if (getIsSupabaseConfigured() && getSupabase()) {
+          const { error } = await getSupabase()
             .from('convenios')
             .update({
               nome: trimmedNome,
@@ -357,7 +357,7 @@ export const ConveniosView: React.FC = () => {
           </p>
         </div>
 
-        {isSupabaseConfigured ? (
+        {getIsSupabaseConfigured() ? (
           <div className="flex items-center gap-2 px-3 py-1.5 bg-[#e7f4e8] text-[#1e7e34] rounded-full text-xs font-medium border border-[#c3e6cb]">
             <span className="w-2 h-2 rounded-full bg-[#28a745] animate-pulse"></span>
             Conectado ao Supabase

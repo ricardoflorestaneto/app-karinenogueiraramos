@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DoctorProfile } from '../types';
 import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 import {
-  supabase,
-  isSupabaseConfigured,
-  getSupabaseCredentials,
-  setCustomSupabaseCredentials,
-  testSupabaseConnection,
-  getSupabaseBucketPhotoUrl,
-} from '../lib/supabase';
+  getSupabase, getIsSupabaseConfigured, getSupabaseCredentials, setCustomSupabaseCredentials, testSupabaseConnection, getSupabaseBucketPhotoUrl, } from '../lib/supabase';
 
 interface SettingsViewProps {
   doctor: DoctorProfile;
@@ -667,7 +661,7 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
                 <span className="material-symbols-outlined text-[#006194]">database</span>
                 Banco de Dados Supabase
               </h3>
-              {isSupabaseConfigured ? (
+              {getIsSupabaseConfigured() ? (
                 <span className="px-2.5 py-0.5 rounded-full bg-[#6cf8bb]/40 text-[#00714d] text-xs font-semibold flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-[#00714d]"></span> Conectado
                 </span>
@@ -781,7 +775,7 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
             </div>
 
             <p className="text-xs text-[#3f4850] mb-3">
-              Copie o código abaixo e execute no <strong>SQL Editor</strong> do seu painel do Supabase para criar as tabelas (<code className="bg-slate-100 px-1 py-0.5 rounded">patients</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">appointments</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">clinical_records</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">doctor_profile</code>) e políticas de RLS. O arquivo também está salvo em <code className="bg-slate-100 px-1 py-0.5 rounded">/supabase/migrations/20260723000000_initial_schema.sql</code>.
+              Copie o código abaixo e execute no <strong>SQL Editor</strong> do seu painel do Supabase para criar as tabelas (<code className="bg-slate-100 px-1 py-0.5 rounded">patients</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">appointments</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">clinical_records</code>, <code className="bg-slate-100 px-1 py-0.5 rounded">doctor_profile</code>) e políticas de RLS. O arquivo também está salvo em <code className="bg-slate-100 px-1 py-0.5 rounded">/getSupabase()/migrations/20260723000000_initial_schema.sql</code>.
             </p>
 
             <pre className="p-4 bg-slate-900 text-slate-100 rounded-xl text-xs overflow-x-auto max-h-80 font-mono leading-relaxed">
@@ -913,7 +907,7 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
                 <input
                   type="url"
                   required
-                  placeholder="https://seu-projeto.supabase.co"
+                  placeholder="https://seu-projeto.getSupabase().co"
                   value={customSupabaseUrl}
                   onChange={(e) => {
                     setCustomSupabaseUrl(e.target.value);

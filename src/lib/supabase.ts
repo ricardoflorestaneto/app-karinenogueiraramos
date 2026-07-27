@@ -70,7 +70,20 @@ export function createActiveSupabaseClient(): SupabaseClient | null {
   const { url, key, isConfigured } = getSupabaseCredentials();
   if (isConfigured) {
     try {
-      return createClient(url, key);
+      return createClient(url, key, {
+        auth: {
+          persistSession: false,
+        },
+        global: {
+          fetch: (...args) => {
+            const [input, init] = args;
+            return fetch(input, {
+              ...init,
+              cache: 'no-store',
+            });
+          },
+        },
+      });
     } catch (e) {
       console.error('Error initializing Supabase client:', e);
       return null;
@@ -79,8 +92,8 @@ export function createActiveSupabaseClient(): SupabaseClient | null {
   return null;
 }
 
-export let supabase: SupabaseClient | null = createActiveSupabaseClient();
-export const isSupabaseConfigured = Boolean(getSupabaseCredentials().isConfigured);
+export const getSupabase = (): SupabaseClient | null => createActiveSupabaseClient();
+export const getIsSupabaseConfigured = () => Boolean(getSupabaseCredentials().isConfigured);
 
 export function setCustomSupabaseCredentials(url: string, key: string) {
   if (typeof window !== 'undefined') {
@@ -91,7 +104,7 @@ export function setCustomSupabaseCredentials(url: string, key: string) {
       localStorage.removeItem('custom_supabase_url');
       localStorage.removeItem('custom_supabase_key');
     }
-    supabase = createActiveSupabaseClient();
+    
   }
 }
 
@@ -268,6 +281,7 @@ export function getSupabaseBucketPhotoUrl(bucketName: string = 'fotodrakarine', 
 
 // Fetch all data from Supabase if configured
 export async function fetchSupabaseData() {
+  const supabase = getSupabase();
   if (!supabase) return null;
 
   try {

@@ -11,6 +11,8 @@ interface AppointmentsViewProps {
   onDeleteAppointment?: (id: string) => void;
   onUpdateStatus: (id: string, newStatus: Appointment['status']) => void;
   onViewPatientRecord: (patientId: string) => void;
+  initialNewAppointmentPatient?: Patient | null;
+  onCloseNewAppointment?: (saved: boolean) => void;
 }
 
 export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
@@ -21,9 +23,29 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
   onDeleteAppointment,
   onUpdateStatus,
   onViewPatientRecord,
+  initialNewAppointmentPatient,
+  onCloseNewAppointment,
 }) => {
-  const [selectedDate, setSelectedDate] = useState('2026-07-23');
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (initialNewAppointmentPatient) {
+      handleOpenNewModal();
+      setSelectedPatientId(initialNewAppointmentPatient.id);
+      if (initialNewAppointmentPatient.convenioId) {
+        setConvenioId(initialNewAppointmentPatient.convenioId);
+      }
+    }
+  }, [initialNewAppointmentPatient]);
+
+  const handleCloseModal = (saved: boolean = false) => {
+    setShowModal(false);
+    setEditingAppointment(null);
+    if (onCloseNewAppointment) {
+      onCloseNewAppointment(saved);
+    }
+  };
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [deletingAppointment, setDeletingAppointment] = useState<Appointment | null>(null);
 
@@ -279,7 +301,11 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
       pPhone = unregisteredPhone.trim();
     } else {
       const patientObj = patients.find((p) => p.id === selectedPatientId);
-      if (!patientObj) return;
+      if (!patientObj) {
+        console.error("Patient not found", selectedPatientId);
+        alert("Patient not found: " + selectedPatientId);
+        return;
+      }
       pId = patientObj.id;
       pName = patientObj.name;
       pPhone = patientObj.whatsapp || patientObj.phone;
@@ -320,11 +346,10 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
         });
       }
     } else {
-      onAddAppointment(appData);
+      console.log("Adding:", appData); onAddAppointment(appData);
     }
 
-    setShowModal(false);
-    setEditingAppointment(null);
+    handleCloseModal(true);
   };
 
   const handleConfirmDelete = () => {
@@ -441,7 +466,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
         <div className="p-5 border-b border-[#e7eeff] bg-[#f0f3ff] flex justify-between items-center">
           <h3 className="font-semibold text-base text-[#111c2d] flex items-center gap-2">
             <span className="material-symbols-outlined text-[#006194]">event</span>
-            Grade de Atendimentos do Dia ({selectedDate})
+            Grade de Atendimentos do Dia ({selectedDate.split('-').reverse().join('-')})
           </h3>
         </div>
 
@@ -515,7 +540,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
 
                         <div className="mt-1 flex items-center gap-2 flex-wrap">
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#e7eeff] text-[#006194]">
-                            Convênio: {app.convenioName || 'Particular'}
+                            Convênio: {app.convenioName || (app.convenioId ? conveniosList.find(c => c.codigo === app.convenioId)?.nome : '') || 'Particular'}
                           </span>
 
                           {targetPhone && (
@@ -621,10 +646,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
                 {editingAppointment ? 'Editar Consulta' : 'Agendar Nova Consulta'}
               </h3>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  setEditingAppointment(null);
-                }}
+                onClick={() => handleCloseModal(false)}
                 className="p-1 text-[#707881] hover:text-[#111c2d] cursor-pointer"
               >
                 <span className="material-symbols-outlined">close</span>
@@ -884,10 +906,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    setEditingAppointment(null);
-                  }}
+                  onClick={() => handleCloseModal(false)}
                   className="w-1/2 py-2.5 border border-[#bfc7d2] rounded-xl text-sm font-medium text-[#3f4850] hover:bg-[#f0f3ff] cursor-pointer"
                 >
                   Cancelar

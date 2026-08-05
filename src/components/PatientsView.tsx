@@ -8,6 +8,7 @@ interface PatientsViewProps {
   onEditPatient: (patient: Patient) => void;
   onViewProntuario: (patient: Patient) => void;
   onDeletePatient: (id: string) => void;
+  onNewAppointment: (patient: Patient) => void;
 }
 
 export const PatientsView: React.FC<PatientsViewProps> = ({
@@ -17,6 +18,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
   onEditPatient,
   onViewProntuario,
   onDeletePatient,
+  onNewAppointment,
 }) => {
   const [statusFilter, setStatusFilter] = useState<'Todos' | 'Ativo' | 'Inativo'>('Todos');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -275,7 +277,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
                           {patient.initials}
                         </div>
                         <div>
-                          <p className="font-semibold text-[#111c2d] hover:text-[#006194] cursor-pointer" onClick={() => onViewProntuario(patient)}>
+                          <p className="font-semibold text-[#111c2d] hover:text-[#006194] cursor-pointer" onClick={() => onEditPatient(patient)}>
                             {patient.name}
                           </p>
                           <p className="text-xs text-[#707881]">Última visita: {patient.lastVisit}</p>
@@ -316,6 +318,13 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
 
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => onNewAppointment(patient)}
+                          className="p-2 text-[#006194] hover:bg-[#e7eeff] rounded-lg transition-colors cursor-pointer"
+                          title="Novo Agendamento"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">calendar_add_on</span>
+                        </button>
                         <button
                           onClick={() => onViewProntuario(patient)}
                           className="p-2 text-[#006194] hover:bg-[#e7eeff] rounded-lg transition-colors cursor-pointer"

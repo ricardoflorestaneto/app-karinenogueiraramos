@@ -53,6 +53,7 @@ export default function App() {
 
   // Selected patient for edit/prontuario
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [newAppointmentPatient, setNewAppointmentPatient] = useState<Patient | null>(null);
 
   // Appointments state
   const [appointments, setAppointments] = useState<Appointment[]>(() => {
@@ -127,12 +128,18 @@ export default function App() {
     setActiveTab('prontuario');
   };
 
+  const handleNewAppointmentFromPatient = (patient: Patient) => {
+    setNewAppointmentPatient(patient);
+    setPreviousTab(activeTab);
+    setActiveTab('appointments');
+  };
+
   const handleSavePatient = async (patientData: Omit<Patient, 'id'> & { id?: string }) => {
     let savedPatient: Patient;
     if (patientData.id) {
       savedPatient = { ...patientData, id: patientData.id } as Patient;
     } else {
-      const newId = `pat-${Date.now()}`;
+      const newId = crypto.randomUUID();
       savedPatient = { ...patientData, id: newId } as Patient;
     }
 
@@ -175,7 +182,7 @@ export default function App() {
   };
 
   const handleAddAppointment = async (newApp: Omit<Appointment, 'id'>) => {
-    const id = `app-${Date.now()}`;
+    const id = crypto.randomUUID();
     const fullApp: Appointment = { ...newApp, id };
 
     if (getIsSupabaseConfigured() && getSupabase()) {
@@ -230,7 +237,7 @@ export default function App() {
   };
 
   const handleAddClinicalRecord = async (newEntry: Omit<ClinicalRecordEntry, 'id'>) => {
-    const id = `rec-${Date.now()}`;
+    const id = crypto.randomUUID();
     const fullRecord: ClinicalRecordEntry = { ...newEntry, id };
 
     if (getIsSupabaseConfigured() && getSupabase()) {
@@ -311,6 +318,7 @@ export default function App() {
               onEditPatient={handleEditPatient}
               onViewProntuario={handleViewProntuario}
               onDeletePatient={handleDeletePatient}
+              onNewAppointment={handleNewAppointmentFromPatient}
             />
           )}
 
@@ -350,6 +358,15 @@ export default function App() {
               onUpdateAppointment={handleUpdateAppointment}
               onDeleteAppointment={handleDeleteAppointment}
               onUpdateStatus={handleUpdateAppointmentStatus}
+              initialNewAppointmentPatient={newAppointmentPatient}
+              onCloseNewAppointment={(saved) => {
+                if (newAppointmentPatient) {
+                  setNewAppointmentPatient(null);
+                  if (!saved) {
+                    setActiveTab(previousTab);
+                  }
+                }
+              }}
               onViewPatientRecord={(patientId) => {
                 const target = patients.find((p) => p.id === patientId);
                 if (target) {

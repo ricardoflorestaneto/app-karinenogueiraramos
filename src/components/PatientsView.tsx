@@ -291,7 +291,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
                       <div className="flex items-center gap-1.5">
                         <span className="text-[#3f4850] text-xs">{patient.whatsapp || patient.phone}</span>
                         <a
-                          href={`https://wa.me/55${(patient.whatsapp || patient.phone || '').replace(/\D/g, '')}`}
+                          href={`https://web.whatsapp.com/send?phone=55${(patient.whatsapp || patient.phone || '').replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noreferrer"
                           className="p-1 text-[#006c49] hover:bg-[#6cf8bb]/20 rounded-md transition-colors"

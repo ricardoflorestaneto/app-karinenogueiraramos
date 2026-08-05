@@ -545,7 +545,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
 
                           {targetPhone && (
                             <a
-                              href={`https://wa.me/55${targetPhone.replace(/\D/g, '')}`}
+                              href={`https://web.whatsapp.com/send?phone=55${targetPhone.replace(/\D/g, '')}`}
                               target="_blank"
                               rel="noreferrer"
                               className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#e8f8f0] text-[#006c49] hover:bg-[#d0f2e2] transition-colors"
@@ -593,7 +593,7 @@ export const AppointmentsView: React.FC<AppointmentsViewProps> = ({
 
                       {targetPhone && (
                         <a
-                          href={`https://wa.me/55${targetPhone.replace(/\D/g, '')}`}
+                          href={`https://web.whatsapp.com/send?phone=55${targetPhone.replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noreferrer"
                           className="px-2.5 py-1.5 bg-[#e8f8f0] text-[#006c49] hover:bg-[#d0f2e2] rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-medium border border-[#006c49]/20"

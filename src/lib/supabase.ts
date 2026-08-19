@@ -4,8 +4,8 @@ import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 
 const env = (import.meta as any).env || {};
 
-export const DEFAULT_SUPABASE_URL = 'https://ddbxpcplqsgtishpofff.supabase.co';
-export const DEFAULT_SUPABASE_KEY = 'sb_publishable_V9EEuOywF53WfsJR0iBBMw_POH3bzHo';
+export const DEFAULT_SUPABASE_URL = 'https://yvkspwttmalbyfmldoxl.supabase.co';
+export const DEFAULT_SUPABASE_KEY = 'sb_publishable_Z6_4mUoCG48w2vAzrZs6fA_P5mmNyD8';
 
 export interface DatabaseConnectionInfo {
   mode: 'database' | 'local';

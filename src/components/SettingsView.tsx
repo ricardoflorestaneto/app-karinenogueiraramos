@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { DoctorProfile } from '../types';
 import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
 import {
-  getSupabase, getIsSupabaseConfigured, getSupabaseCredentials, setCustomSupabaseCredentials, testSupabaseConnection, getSupabaseBucketPhotoUrl, } from '../lib/supabase';
+  getSupabase,
+  getIsSupabaseConfigured,
+  getSupabaseCredentials,
+  setCustomSupabaseCredentials,
+  testSupabaseConnection,
+  getSupabaseBucketPhotoUrl,
+  getCurrentConnectionInfo,
+} from '../lib/supabase';
 
 interface SettingsViewProps {
   doctor: DoctorProfile;
@@ -675,6 +682,35 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
             <p className="text-xs text-[#3f4850] leading-relaxed">
               Integrado com cliente Supabase com sincronização em tempo real para Pacientes, Prontuários e Consultas.
             </p>
+
+            {/* Info de Conexão Ativa */}
+            {(() => {
+              const connInfo = getCurrentConnectionInfo();
+              return (
+                <div className="p-3 bg-[#f0f3ff] rounded-xl text-xs space-y-1.5 border border-[#d8e3fb]">
+                  <div className="flex justify-between items-center text-[#3f4850]">
+                    <span>Modo Operacional:</span>
+                    <span className="font-bold text-[#111c2d]">
+                      {connInfo.mode === 'database' ? 'Banco em Nuvem' : 'Memória Local'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-[#3f4850]">
+                    <span>Origem da Chave:</span>
+                    <span className="font-semibold text-[#006194]">
+                      {connInfo.sourceLabel}
+                    </span>
+                  </div>
+                  {connInfo.url && (
+                    <div className="flex justify-between items-center text-[#3f4850] pt-1 border-t border-[#dee8ff]">
+                      <span>Host Supabase:</span>
+                      <span className="font-mono text-[11px] text-[#111c2d] truncate max-w-[190px]" title={connInfo.url}>
+                        {connInfo.url.replace(/^https?:\/\//, '')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             <div className="flex flex-col sm:flex-row gap-2 pt-1">
               <button

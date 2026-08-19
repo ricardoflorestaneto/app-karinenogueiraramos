@@ -106,4 +106,4 @@ export interface Procedimento {
   updatedAt?: string;
 }
 
-export type ActiveTab = 'dashboard' | 'patients' | 'new-patient' | 'edit-patient' | 'prontuario' | 'appointments' | 'settings' | 'convenios' | 'procedimentos';
+export type ActiveTab = 'dashboard' | 'patients' | 'new-patient' | 'edit-patient' | 'prontuario' | 'appointments' | 'settings' | 'convenios' | 'procedimentos' | 'indicadores';

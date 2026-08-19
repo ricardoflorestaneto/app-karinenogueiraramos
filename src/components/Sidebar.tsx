@@ -1,6 +1,7 @@
 import React from 'react';
 import { ActiveTab, DoctorProfile } from '../types';
 import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
+import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 
 interface SidebarProps {
   doctor?: DoctorProfile;
@@ -73,6 +74,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span>Agenda de Consultas</span>
         </button>
 
+        <button
+          onClick={() => setActiveTab('indicadores')}
+          className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer font-medium text-sm text-left ${
+            activeTab === 'indicadores'
+              ? 'text-[#006194] font-bold border-r-4 border-[#006194] bg-[#e7eeff] shadow-xs'
+              : 'text-[#3f4850] hover:bg-[#dee8ff] hover:text-[#111c2d]'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[20px]">query_stats</span>
+          <span>Indicadores Gerenciais</span>
+        </button>
+
         {/* Cadastros Group */}
         <div className="pt-2 space-y-1">
           <div className="px-3.5 pb-1 flex items-center gap-1.5 text-[11px] font-bold text-[#707881] uppercase tracking-wider">
@@ -117,7 +130,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Bottom Actions */}
-      <div className="mt-auto px-4 space-y-3 pt-4 border-t border-[#d8e3fb]">
+      <div className="mt-auto px-4 space-y-2.5 pt-3 border-t border-[#d8e3fb]">
+        {/* Status de Conexão com o Banco / Local */}
+        <ConnectionStatusBadge variant="sidebar" />
+
         <button
           onClick={() => setActiveTab('new-patient')}
           className="w-full bg-[#006194] text-white py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-md hover:bg-[#004b73] active:scale-[0.98] transition-all cursor-pointer"

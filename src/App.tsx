@@ -24,10 +24,20 @@ import { AppointmentsView } from './components/AppointmentsView';
 import { SettingsView } from './components/SettingsView';
 import { ConveniosView } from './components/ConveniosView';
 import { ProcedimentosView } from './components/ProcedimentosView';
+import { IndicadoresView } from './components/IndicadoresView';
 import { SupabaseErrorModal } from './components/SupabaseErrorModal';
 
 import {
-  getSupabase, getIsSupabaseConfigured, fetchSupabaseData, mapPatientToDb, mapAppointmentToDb, mapClinicalRecordToDb, notifySupabaseDatabaseError, } from './lib/supabase';
+  getSupabase,
+  getIsSupabaseConfigured,
+  fetchSupabaseData,
+  mapPatientToDb,
+  mapAppointmentToDb,
+  mapClinicalRecordToDb,
+  notifySupabaseDatabaseError,
+  isFutureDate,
+  FUTURE_DATE_ERROR_MESSAGE,
+} from './lib/supabase';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -135,6 +145,16 @@ export default function App() {
   };
 
   const handleSavePatient = async (patientData: Omit<Patient, 'id'> & { id?: string }) => {
+    // Validação de Data no fluxo de persistência
+    if (patientData.birthDate && isFutureDate(patientData.birthDate)) {
+      notifySupabaseDatabaseError('Validação de Data', { message: FUTURE_DATE_ERROR_MESSAGE });
+      return;
+    }
+    if (patientData.registrationDate && isFutureDate(patientData.registrationDate)) {
+      notifySupabaseDatabaseError('Validação de Data', { message: FUTURE_DATE_ERROR_MESSAGE });
+      return;
+    }
+
     let savedPatient: Patient;
     if (patientData.id) {
       savedPatient = { ...patientData, id: patientData.id } as Patient;
@@ -391,6 +411,15 @@ export default function App() {
 
           {activeTab === 'procedimentos' && (
             <ProcedimentosView />
+          )}
+
+          {activeTab === 'indicadores' && (
+            <IndicadoresView
+              onNavigateToPatients={() => setActiveTab('patients')}
+              onNavigateToNewPatient={() => setActiveTab('new-patient')}
+              fallbackPatientsCount={patients.length}
+              fallbackPatients={patients}
+            />
           )}
         </main>
 

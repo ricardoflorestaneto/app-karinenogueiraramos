@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Patient, ToothCondition, ClinicalRecordEntry, ToothProcedureType, DoctorProfile } from '../types';
 import { generateDefaultTeeth } from '../mockData';
+import { calculateDetailedAge } from '../lib/supabase';
 
 interface ProntuarioViewProps {
   patient: Patient;
@@ -548,7 +549,7 @@ export const ProntuarioView: React.FC<ProntuarioViewProps> = ({
               </span>
               <span>•</span>
               <span>
-                <strong>Idade:</strong> {patient.age || 30} anos
+                <strong>Idade:</strong> {patient.birthDate ? calculateDetailedAge(patient.birthDate).formatted : `${patient.age || 0} anos`}
               </span>
               <span>•</span>
               <span>

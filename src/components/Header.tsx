@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DoctorProfile } from '../types';
 import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
+import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 
 interface HeaderProps {
   doctor: DoctorProfile;
@@ -70,7 +71,13 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {/* Status da Conexão (Banco Supabase vs Local) */}
+        <ConnectionStatusBadge
+          variant="header"
+          onNavigateToSettings={onNavigateToSettings}
+        />
+
         {/* Notifications Popover */}
         <div className="relative">
           <button

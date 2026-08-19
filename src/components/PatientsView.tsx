@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Patient, ActiveTab } from '../types';
+import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 
 interface PatientsViewProps {
   patients: Patient[];
@@ -123,9 +124,12 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#111c2d] tracking-tight">
-            Gerenciamento de Pacientes
-          </h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#111c2d] tracking-tight">
+              Gerenciamento de Pacientes
+            </h2>
+            <ConnectionStatusBadge variant="compact" />
+          </div>
           <p className="text-sm text-[#3f4850] mt-1">
             Visualize e edite as informações clínicas da sua base de dados.
           </p>

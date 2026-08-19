@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import { Patient } from '../types';
+import {
+  calculateDetailedAge,
+  getLocalDateString,
+  isFutureDate,
+  FUTURE_DATE_ERROR_MESSAGE,
+} from '../lib/supabase';
 
 interface PatientFormViewProps {
   initialPatient?: Patient | null;
@@ -28,12 +34,14 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
   onSave,
   onCancel,
 }) => {
+  const todayDateStr = getLocalDateString();
+
   const [formData, setFormData] = useState({
     name: initialPatient?.name || '',
     cpf: initialPatient?.cpf ? formatCpf(initialPatient.cpf) : '',
     rg: initialPatient?.rg || '',
     birthDate: initialPatient?.birthDate || '',
-    age: initialPatient?.age || (initialPatient?.birthDate ? calculateAge(initialPatient.birthDate) : 0),
+    age: initialPatient?.age || (initialPatient?.birthDate ? calculateDetailedAge(initialPatient.birthDate).years : 0),
     socialName: initialPatient?.socialName || '',
     gender: initialPatient?.gender || 'Feminino',
     phone: initialPatient?.phone || '',
@@ -47,7 +55,7 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
     neighborhood: initialPatient?.neighborhood || '',
     city: initialPatient?.city || 'Fortaleza',
     state: initialPatient?.state || 'CE',
-    registrationDate: initialPatient?.registrationDate || new Date().toISOString().split('T')[0],
+    registrationDate: initialPatient?.registrationDate || todayDateStr,
     maritalStatus: initialPatient?.maritalStatus || 'Solteiro(a)',
     active: initialPatient?.active ?? true,
     notes: initialPatient?.notes || '',
@@ -57,27 +65,35 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorField, setErrorField] = useState('');
+  const [dateError, setDateError] = useState('');
+  const [formErrorMessage, setFormErrorMessage] = useState('');
 
-  function calculateAge(dateString: string): number {
-    if (!dateString) return 0;
-    const today = new Date();
-    const birth = new Date(dateString);
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age > 0 ? age : 0;
-  }
+  const isBirthDateFuture = Boolean(formData.birthDate && isFutureDate(formData.birthDate));
+  const detailedAge = isBirthDateFuture
+    ? { years: 0, months: 0, days: 0, formatted: 'Data futura inválida' }
+    : calculateDetailedAge(formData.birthDate);
 
   const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const dateVal = e.target.value;
-    const calculated = calculateAge(dateVal);
-    setFormData((prev) => ({
-      ...prev,
-      birthDate: dateVal,
-      age: calculated,
-    }));
+    if (isFutureDate(dateVal)) {
+      setDateError(FUTURE_DATE_ERROR_MESSAGE);
+      setErrorField('birthDate');
+      setFormData((prev) => ({
+        ...prev,
+        birthDate: dateVal,
+        age: 0,
+      }));
+    } else {
+      setDateError('');
+      if (errorField === 'birthDate') setErrorField('');
+      if (formErrorMessage === FUTURE_DATE_ERROR_MESSAGE) setFormErrorMessage('');
+      const detailed = calculateDetailedAge(dateVal);
+      setFormData((prev) => ({
+        ...prev,
+        birthDate: dateVal,
+        age: detailed.years,
+      }));
+    }
   };
 
   const [isLoadingCep, setIsLoadingCep] = useState(false);
@@ -130,15 +146,30 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
     e.preventDefault();
     if (!formData.name.trim()) {
       setErrorField('name');
+      setFormErrorMessage('Por favor, informe o nome do paciente.');
       return;
     }
     if (!formData.cpf.trim()) {
       setErrorField('cpf');
+      setFormErrorMessage('Por favor, informe o CPF do paciente.');
+      return;
+    }
+    if (formData.birthDate && isFutureDate(formData.birthDate)) {
+      setErrorField('birthDate');
+      setDateError(FUTURE_DATE_ERROR_MESSAGE);
+      setFormErrorMessage(FUTURE_DATE_ERROR_MESSAGE);
+      return;
+    }
+    if (formData.registrationDate && isFutureDate(formData.registrationDate)) {
+      setErrorField('registrationDate');
+      setFormErrorMessage(FUTURE_DATE_ERROR_MESSAGE);
       return;
     }
 
     setIsSaving(true);
     setErrorField('');
+    setDateError('');
+    setFormErrorMessage('');
 
     setTimeout(() => {
       setIsSaving(false);
@@ -208,6 +239,24 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
         </p>
       </div>
 
+      {/* Alerta de Validação */}
+      {formErrorMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-[#ffdad6] text-[#ba1a1a] border border-[#ba1a1a]/30 flex items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px] text-[#ba1a1a]">error</span>
+            <span className="text-sm font-semibold">{formErrorMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFormErrorMessage('')}
+            className="text-[#ba1a1a] hover:opacity-80 cursor-pointer p-1"
+            title="Fechar aviso"
+          >
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+      )}
+
       <form id="patientForm" onSubmit={handleSubmit} className="space-y-6">
         {/* Bento Grid layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -270,27 +319,52 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#3f4850] mb-1">
-                    Data de Nascimento
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-[#3f4850]">
+                      Data de Nascimento
+                    </label>
+                    <span className="text-[11px] text-[#707881]">
+                      Máx: {todayDateStr.split('-').reverse().join('/')}
+                    </span>
+                  </div>
                   <input
                     type="date"
+                    max={todayDateStr}
                     value={formData.birthDate}
                     onChange={handleBirthDateChange}
-                    className="w-full bg-[#f0f3ff] border-b-2 border-[#bfc7d2] focus:border-[#006194] focus:outline-none rounded-t-lg px-4 py-3 text-sm text-[#111c2d] transition-all"
+                    className={`w-full bg-[#f0f3ff] border-b-2 ${
+                      errorField === 'birthDate' || dateError || isBirthDateFuture
+                        ? 'border-[#ba1a1a] bg-[#fff8f8]'
+                        : 'border-[#bfc7d2]'
+                    } focus:border-[#006194] focus:outline-none rounded-t-lg px-4 py-3 text-sm text-[#111c2d] transition-all`}
                   />
+                  {(errorField === 'birthDate' || dateError || isBirthDateFuture) && (
+                    <p className="text-xs font-semibold text-[#ba1a1a] mt-1.5 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[15px]">error</span>
+                      <span>{FUTURE_DATE_ERROR_MESSAGE}</span>
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#3f4850] mb-1">
-                    Idade (Anos)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-[#3f4850]">
+                      Idade (Anos, Meses e Dias)
+                    </label>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#006194] bg-[#e7eeff] px-2 py-0.5 rounded-md">
+                      <span className="material-symbols-outlined text-[13px]">auto_awesome</span>
+                      Automático
+                    </span>
+                  </div>
                   <input
-                    type="number"
-                    value={formData.age}
-                    onChange={(e) => setFormData({ ...formData, age: Number(e.target.value) })}
-                    placeholder="00"
-                    className="w-full bg-[#f0f3ff] border-b-2 border-[#bfc7d2] focus:border-[#006194] focus:outline-none rounded-t-lg px-4 py-3 text-sm text-[#111c2d] transition-all"
+                    type="text"
+                    readOnly
+                    value={detailedAge.formatted || (formData.age ? `${formData.age} ${formData.age === 1 ? 'ano' : 'anos'}` : '')}
+                    placeholder="Preencha a data de nascimento"
+                    title={detailedAge.formatted || (formData.age ? `${formData.age} anos` : '')}
+                    className={`w-full bg-[#f0f3ff] border-b-2 ${
+                      isBirthDateFuture ? 'border-[#ba1a1a] text-[#ba1a1a]' : 'border-[#bfc7d2] text-[#111c2d]'
+                    } focus:border-[#006194] focus:outline-none rounded-t-lg px-4 py-3 text-sm transition-all font-medium select-all`}
                   />
                 </div>
               </div>
@@ -555,6 +629,7 @@ export const PatientFormView: React.FC<PatientFormViewProps> = ({
                   </label>
                   <input
                     type="date"
+                    max={todayDateStr}
                     readOnly
                     disabled
                     value={formData.registrationDate}

@@ -26,6 +26,7 @@ import { ConveniosView } from './components/ConveniosView';
 import { ProcedimentosView } from './components/ProcedimentosView';
 import { IndicadoresView } from './components/IndicadoresView';
 import { SupabaseErrorModal } from './components/SupabaseErrorModal';
+import { APP_VERSION_FULL } from './version';
 
 import {
   getSupabase,
@@ -424,7 +425,7 @@ export default function App() {
         </main>
 
         <footer className="mt-auto py-4 px-8 text-center border-t border-[#e7eeff] text-xs text-[#707881]">
-          © {new Date().getFullYear()} {doctor.clinicName || doctor.name || 'Consultório Dra. Karine Nogueira Ramos'} • Todos os direitos reservados • v2.4.0 Clinical Precision
+          © {new Date().getFullYear()} {doctor.clinicName || doctor.name || 'Consultório Dra. Karine Nogueira Ramos'} • Todos os direitos reservados • {APP_VERSION_FULL}
         </footer>
       </div>
 

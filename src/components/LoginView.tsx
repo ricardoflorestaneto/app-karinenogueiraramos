@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { APP_VERSION_FULL } from '../version';
 import {
   getSupabase, getIsSupabaseConfigured, getSupabaseCredentials, setCustomSupabaseCredentials, testSupabaseConnection, } from '../lib/supabase';
 
@@ -370,7 +371,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             {getIsSupabaseConfigured() ? 'Supabase Auth Ativo' : 'Servidor Modo Local'}
           </span>
           <span className="text-[#bfc7d2]">|</span>
-          <span>v2.4.0 Clinical Precision</span>
+          <span>{APP_VERSION_FULL}</span>
         </div>
       </main>
 

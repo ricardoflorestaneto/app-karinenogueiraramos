@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DoctorProfile } from '../types';
 import { DEFAULT_DOCTOR_PHOTO_URL } from '../mockData';
+import { APP_VERSION_FULL } from '../version';
 import {
   getSupabase,
   getIsSupabaseConfigured,
@@ -780,7 +781,7 @@ SELECT setval('procedimentos_id_seq', (SELECT COALESCE(MAX(id), 1) FROM public.p
             </h3>
             <div className="text-xs space-y-1.5 text-[#3f4850]">
               <p>
-                <strong>Versão:</strong> 2.4.0 Clinical Precision + Supabase
+                <strong>Versão:</strong> {APP_VERSION_FULL}
               </p>
               <p>
                 <strong>Licença:</strong> Dra. Karine Nogueira Ramos

@@ -290,6 +290,8 @@ export function mapPatientFromDb(row: any): Patient {
     medicalHistory: Array.isArray(row.medical_history) ? row.medical_history : [],
     convenioId: row.convenio_id,
     convenioName: row.convenio_name || (row.convenios ? row.convenios.nome : ''),
+    createdAt: row.created_at || '',
+    updatedAt: row.updated_at || '',
   };
 }
 
@@ -419,6 +421,7 @@ export function mapPatientToDb(patient: Patient): any {
     allergies: patient.allergies || [],
     medical_history: patient.medicalHistory || [],
     convenio_id: patient.convenioId,
+    updated_at: patient.updatedAt || new Date().toISOString(),
   };
 }
 

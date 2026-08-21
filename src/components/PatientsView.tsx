@@ -89,8 +89,33 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
     }).length;
   }, [patients]);
 
+  // Formata o campo updated_at (select updated_at from patients) ou last_visit
+  const formatPatientLastActivity = (patient: Patient) => {
+    if (patient.updatedAt) {
+      try {
+        const d = new Date(patient.updatedAt);
+        if (!isNaN(d.getTime())) {
+          return `Última alteração: ${d.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}`;
+        }
+      } catch {
+        // fallback
+      }
+      return `Última alteração: ${patient.updatedAt}`;
+    }
+    if (patient.lastVisit) {
+      return `Última visita: ${patient.lastVisit}`;
+    }
+    return 'Sem registros recentes';
+  };
+
   const exportToCSV = () => {
-    const headers = ['Nome', 'CPF', 'Telefone', 'E-mail', 'Cidade', 'Estado', 'Status', 'Última Visita'];
+    const headers = ['Nome', 'CPF', 'Telefone', 'E-mail', 'Cidade', 'Estado', 'Status', 'Última Visita', 'Última Alteração'];
     const rows = filteredPatients.map((p) => [
       p.name,
       p.cpf,
@@ -100,6 +125,7 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
       p.state,
       p.active ? 'Ativo' : 'Inativo',
       p.lastVisit,
+      p.updatedAt ? new Date(p.updatedAt).toLocaleString('pt-BR') : '-',
     ]);
 
     const csvContent =
@@ -284,7 +310,12 @@ export const PatientsView: React.FC<PatientsViewProps> = ({
                           <p className="font-semibold text-[#111c2d] hover:text-[#006194] cursor-pointer" onClick={() => onEditPatient(patient)}>
                             {patient.name}
                           </p>
-                          <p className="text-xs text-[#707881]">Última visita: {patient.lastVisit}</p>
+                          <p
+                            className="text-xs text-[#707881]"
+                            title={patient.updatedAt ? `updated_at: ${patient.updatedAt}` : undefined}
+                          >
+                            {formatPatientLastActivity(patient)}
+                          </p>
                         </div>
                       </div>
                     </td>

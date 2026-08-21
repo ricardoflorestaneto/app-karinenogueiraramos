@@ -156,12 +156,13 @@ export default function App() {
       return;
     }
 
+    const nowIso = new Date().toISOString();
     let savedPatient: Patient;
     if (patientData.id) {
-      savedPatient = { ...patientData, id: patientData.id } as Patient;
+      savedPatient = { ...patientData, id: patientData.id, updatedAt: nowIso } as Patient;
     } else {
       const newId = crypto.randomUUID();
-      savedPatient = { ...patientData, id: newId } as Patient;
+      savedPatient = { ...patientData, id: newId, createdAt: nowIso, updatedAt: nowIso } as Patient;
     }
 
     if (getIsSupabaseConfigured() && getSupabase()) {

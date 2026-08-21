@@ -48,6 +48,8 @@ export const initialPatients: Patient[] = [
     medicalHistory: ['Hipertensão leve sob controle'],
     convenioId: 1,
     convenioName: 'Unimed',
+    createdAt: '2023-08-10T14:30:00.000Z',
+    updatedAt: '2026-08-19T10:15:00.000Z',
   },
   {
     id: 'pat-2',
@@ -77,6 +79,8 @@ export const initialPatients: Patient[] = [
     medicalHistory: [],
     convenioId: 2,
     convenioName: 'Bradesco Saúde',
+    createdAt: '2023-01-15T09:00:00.000Z',
+    updatedAt: '2026-07-12T16:45:00.000Z',
   },
   {
     id: 'pat-3',
@@ -105,6 +109,8 @@ export const initialPatients: Patient[] = [
     medicalHistory: [],
     convenioId: 3,
     convenioName: 'Amil',
+    createdAt: '2023-09-27T11:20:00.000Z',
+    updatedAt: '2026-08-18T14:10:00.000Z',
   },
   {
     id: 'pat-4',
@@ -133,6 +139,8 @@ export const initialPatients: Patient[] = [
     medicalHistory: ['Diabetes Tipo 2'],
     convenioId: 1,
     convenioName: 'Unimed',
+    createdAt: '2023-10-01T08:30:00.000Z',
+    updatedAt: '2026-08-20T17:30:00.000Z',
   },
   {
     id: 'pat-5',
@@ -160,6 +168,8 @@ export const initialPatients: Patient[] = [
     medicalHistory: [],
     convenioId: 5,
     convenioName: 'Porto Seguro Saúde',
+    createdAt: '2024-02-14T15:00:00.000Z',
+    updatedAt: '2026-08-16T11:00:00.000Z',
   },
   {
     id: 'pat-6',
@@ -187,6 +197,8 @@ export const initialPatients: Patient[] = [
     medicalHistory: [],
     convenioId: 1,
     convenioName: 'Unimed',
+    createdAt: '2024-01-20T10:00:00.000Z',
+    updatedAt: '2026-08-14T09:20:00.000Z',
   },
 ];
 

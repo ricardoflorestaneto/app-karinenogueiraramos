@@ -31,6 +31,8 @@ export interface Patient {
   medicalHistory?: string[];
   convenioId?: number;
   convenioName?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type ToothProcedureType = 'Nenhum' | 'Restauração' | 'Canal' | 'Extração' | 'Limpeza' | 'Coroa' | 'Implante' | 'Aparelho';

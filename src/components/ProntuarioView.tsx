@@ -557,7 +557,25 @@ export const ProntuarioView: React.FC<ProntuarioViewProps> = ({
               </span>
               <span>•</span>
               <span>
-                <strong>Última Visita:</strong> {patient.lastVisit}
+                <strong>{patient.updatedAt ? 'Última Alteração:' : 'Última Visita:'}</strong>{' '}
+                {patient.updatedAt
+                  ? (() => {
+                      try {
+                        const d = new Date(patient.updatedAt);
+                        return !isNaN(d.getTime())
+                          ? d.toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : patient.updatedAt;
+                      } catch {
+                        return patient.updatedAt;
+                      }
+                    })()
+                  : patient.lastVisit || 'Sem registros'}
               </span>
             </div>
           </div>
